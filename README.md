@@ -1,5 +1,5 @@
-# Adafruit_char_LCD_c_lib
-The standard Adafruit CharLCD library translated into c for the Rpi Pico. The original (deprecated) python library can be found [here](https://github.com/adafruit/Adafruit_Python_CharLCD/blob/master/Adafruit_CharLCD/Adafruit_CharLCD.py).
+# CharLCD C Library
+The standard Adafruit CharLCD library (Adafruit_Python_CHarLCD) translated into C for the Rpi Pico. The original (deprecated) python library can be found [here](https://github.com/adafruit/Adafruit_Python_CharLCD/blob/master/Adafruit_CharLCD/Adafruit_CharLCD.py).
 
 Bit's of the library have been omitted as I had no need for them, namely RGB and backlight control.
 
