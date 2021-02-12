@@ -97,15 +97,11 @@
 #define LCD_ROW_OFFSET3 0x14
 #define LCD_ROW_OFFSET4 0x54
 
-#define GPIO_INIT_W_DIR(gpio, dir) \
-    gpio_init(gpio);               \
-    gpio_set_dir(gpio, dir);
-
-#define GPIO_PUT(gpio, value) \
-    gpio_put(gpio, value);
-
-#define SLEEP_US(us) \
-    sleep_us(us)
+struct display_t
+{
+    int display_ctrl;
+    int display_mode;
+};
 
 void lcd_gpio_init();
 
@@ -115,12 +111,12 @@ void lcd_clear();
 void lcd_init();
 void lcd_home();
 void lcd_set_cursor(uint8_t col, uint8_t row);
-void lcd_enable_display(bool enable);
-void lcd_show_cursor(bool show);
-void lcd_blink(bool blink);
+void lcd_enable_display(bool enable, struct display_t *display);
+void lcd_show_cursor(bool show, struct display_t *display);
+void lcd_blink(bool blink, struct display_t *display);
 void lcd_move_left();
 void lcd_move_right();
-void lcd_set_left_to_right();
-void lcd_set_right_to_left();
-void lcd_autoscroll(bool autoscroll);
+void lcd_set_left_to_right(struct display_t *display);
+void lcd_set_right_to_left(struct display_t *display);
+void lcd_autoscroll(bool autoscroll, struct display_t *display);
 void lcd_writeln(char *str);

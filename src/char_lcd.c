@@ -42,8 +42,8 @@
 // THE SOFTWARE.
 
 #include "char_lcd.h"
-#include "pico/stdlib.h"
 #include <stdio.h>
+#include "sdk_wrapper.h"
 
 void lcd_pulse_enable()
 {
@@ -81,15 +81,15 @@ void lcd_clear()
     SLEEP_US(3000);
 }
 
-void lcd_init()
+void lcd_init(struct display_t *display)
 {
 
-    GPIO_INIT_W_DIR(RS, GPIO_OUT);
-    GPIO_INIT_W_DIR(EN, GPIO_OUT);
-    GPIO_INIT_W_DIR(D4, GPIO_OUT);
-    GPIO_INIT_W_DIR(D5, GPIO_OUT);
-    GPIO_INIT_W_DIR(D6, GPIO_OUT);
-    GPIO_INIT_W_DIR(D7, GPIO_OUT);
+    GPIO_INIT_W_DIR(RS, _GPIO_OUT);
+    GPIO_INIT_W_DIR(EN, _GPIO_OUT);
+    GPIO_INIT_W_DIR(D4, _GPIO_OUT);
+    GPIO_INIT_W_DIR(D5, _GPIO_OUT);
+    GPIO_INIT_W_DIR(D6, _GPIO_OUT);
+    GPIO_INIT_W_DIR(D7, _GPIO_OUT);
 
     lcd_write8(0x32, 0);
     lcd_write8(0x32, 0);
@@ -103,6 +103,9 @@ void lcd_init()
     lcd_write8(LCD_ENTRYMODESET | displaymode, 0);
 
     lcd_clear();
+
+    display->display_ctrl = displaycontrol;
+    display->display_mode = displaymode;
 
     //set the entry mode
 }
@@ -144,33 +147,43 @@ void lcd_set_cursor(uint8_t col, uint8_t row)
     lcd_write8(LCD_SETDDRAMADDR | (col + row_offset), 0);
 }
 
-void lcd_write_display_ctrl(int ctrl, bool _true)
+void lcd_enable_display(bool enable, struct display_t *display)
 {
-    int displaycontrol;
-    if (_true)
+    if (enable)
     {
-        displaycontrol |= ctrl;
+       display-> display_ctrl |= LCD_DISPLAYON;
     }
     else
     {
-        displaycontrol &= ~ctrl;
+        display->display_ctrl &= ~LCD_DISPLAYON;
     }
-    lcd_write8(LCD_DISPLAYCONTROL | displaycontrol, 0);
+    lcd_write8(LCD_DISPLAYCONTROL | display->display_ctrl, 0);
 }
 
-void lcd_enable_display(bool enable)
+void lcd_show_cursor(bool show, struct display_t *display)
 {
-    lcd_write_display_ctrl(LCD_DISPLAYON, enable);
+    if (show)
+    {
+        display->display_ctrl |= LCD_CURSORON;
+    }
+    else
+    {
+        display->display_ctrl &= ~LCD_CURSORON;
+    }
+    lcd_write8(LCD_DISPLAYCONTROL | display->display_ctrl, 0);
 }
 
-void lcd_show_cursor(bool show)
+void lcd_blink(bool blink, struct display_t *display)
 {
-    lcd_write_display_ctrl(LCD_CURSORON, show);
-}
-
-void lcd_blink(bool blink)
-{
-    lcd_write_display_ctrl(LCD_BLINKON, blink);
+    if (blink)
+    {
+        display->display_ctrl |= LCD_BLINKON;
+    }
+    else
+    {
+        display->display_ctrl &= ~LCD_BLINKON;
+    }
+    lcd_write8(LCD_DISPLAYCONTROL | display->display_ctrl, 0);
 }
 
 void lcd_move_left()
@@ -183,22 +196,28 @@ void lcd_move_right()
     lcd_write8(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT, 0);
 }
 
-void lcd_set_left_to_right()
+void lcd_set_left_to_right(struct display_t *display)
 {
-    int displaymode;
-    displaymode |= LCD_ENTRYLEFT;
-    lcd_write8(LCD_ENTRYMODESET | displaymode, 0);
+    display->display_mode |= LCD_ENTRYLEFT;
+    lcd_write8(LCD_ENTRYMODESET | display->display_mode, 0);
 }
-void lcd_set_right_to_left()
+void lcd_set_right_to_left(struct display_t *display)
 {
-    int displaymode;
-    displaymode &= ~LCD_ENTRYLEFT;
-    lcd_write8(LCD_ENTRYMODESET | displaymode, 0);
+    display->display_mode &= ~LCD_ENTRYLEFT;
+    lcd_write8(LCD_ENTRYMODESET | display->display_mode, 0);
 }
 
-void lcd_autoscroll(bool autoscroll)
+void lcd_autoscroll(bool autoscroll, struct display_t *display)
 {
-    lcd_write_display_ctrl(LCD_ENTRYSHIFTINCREMENT, autoscroll);
+    if (autoscroll)
+    {
+        display->display_mode |= LCD_ENTRYSHIFTINCREMENT;
+    }
+    else
+    {
+        display->display_mode &= ~LCD_ENTRYSHIFTINCREMENT;
+    }
+    lcd_write8(LCD_ENTRYMODESET | display->display_mode, 0);
 }
 void lcd_writeln(char *str)
 {
