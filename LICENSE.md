@@ -18,7 +18,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-## Parts of this library were modified using the original Adafruit python library, Adafruit_Python_CharLCD. the original license is below:
+# Original License
+Parts of this library were modified using the original Adafruit python library, Adafruit_Python_CharLCD. the original license is below:
 
 The MIT License (MIT)
 
